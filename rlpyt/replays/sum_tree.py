@@ -40,7 +40,7 @@ class SumTree:
         self._allocate_tree()
         self.low_idx = 2 ** (self.tree_levels - 1) - 1  # pri_idx + low_idx -> tree_idx
         self.high_idx = self.size + self.low_idx
-        self.priorities = self.tree[self.low_idx:self.high_idx].reshape(T, B)
+        # self.priorities = self.tree[self.low_idx:self.high_idx].reshape(T, B)
         if enable_input_priorities:
             self.input_priorities = default_value * np.ones((T, B))
         else:
@@ -51,7 +51,7 @@ class SumTree:
         self.tree = np.zeros(2 ** self.tree_levels - 1)  # Double precision.
 
     def reset(self):
-        self.tree.fill(0)
+        # self.tree.fill(0)
         self.t = 0
         self._initial_wrap_guard = True
         if self.input_priorities is not None:
@@ -237,8 +237,9 @@ class AsyncSumTree(SumTree):
         # Wrap guard behavior should be fine without async--each will catch it.
 
     def _allocate_tree(self):
-        self.tree = np_mp_array(2 ** self.tree_levels - 1, np.float64)  # Shared memory.
-        self.tree.fill(0)  # Just in case.
+        pass
+        # self.tree = np_mp_array(2 ** self.tree_levels - 1, np.float64)  # Shared memory.
+        # self.tree.fill(0)  # Just in case.
 
     def reset(self):
         super().reset()
