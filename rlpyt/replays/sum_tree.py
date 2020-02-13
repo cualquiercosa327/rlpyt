@@ -216,7 +216,8 @@ class AsyncSumTree(SumTree):
     async_ = True
 
     def __init__(self, *args, **kwargs):
-        self.async_t = mp.RawValue("l", 0)
+        ctx = mp.get_context('spawn')
+        self.async_t = ctx.RawValue("l", 0)
         super().__init__(*args, **kwargs)
         # Wrap guard behavior should be fine without async--each will catch it.
 

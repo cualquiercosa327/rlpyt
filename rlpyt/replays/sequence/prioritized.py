@@ -23,6 +23,7 @@ class PrioritizedSequenceReplay:
         super().__init__(**kwargs)
         save__init__args(locals())
         assert self.batch_T is not None, "Must assign fixed batch_T for prioritized."
+        self.async_ = True
         self.init_priority_tree()
 
     def init_priority_tree(self):

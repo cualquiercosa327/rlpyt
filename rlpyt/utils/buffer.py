@@ -30,9 +30,10 @@ def build_array(example, leading_dims, share_memory=False):
 
 
 def np_mp_array(shape, dtype):
+    ctx = mp.get_context('spawn')
     size = int(np.prod(shape))
     nbytes = size * np.dtype(dtype).itemsize
-    mp_array = mp.RawArray(ctypes.c_char, nbytes)
+    mp_array = ctx.RawArray(ctypes.c_char, nbytes)
     return np.frombuffer(mp_array, dtype=dtype, count=size).reshape(shape)
 
 
