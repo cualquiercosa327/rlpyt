@@ -1,15 +1,19 @@
 
 import multiprocessing as mp
 import queue
+import numpy as np
+
+from rlpyt.utils.buffer import np_mp_array
 
 
 class RWLock:
     """Multiple simultaneous readers, one writer."""
 
     def __init__(self):
-        self.write_lock = mp.Lock()
-        self._read_lock = mp.Lock()
-        self._read_count = mp.RawValue("i")
+        ctx = mp.get_context('spawn')
+        self.write_lock = ctx.Lock()
+        self._read_lock = ctx.Lock()
+        self._read_count = np_mp_array(1, np.uint8)
 
     def __enter__(self):
         self.acquire_read()
@@ -25,14 +29,14 @@ class RWLock:
 
     def acquire_read(self):
         with self._read_lock:
-            self._read_count.value += 1
-            if self._read_count.value == 1:
+            self._read_count[0] += 1
+            if self._read_count[0] == 1:
                 self.write_lock.acquire()
 
     def release_read(self):
         with self._read_lock:
-            self._read_count.value -= 1
-            if self._read_count.value == 0:
+            self._read_count[0] -= 1
+            if self._read_count[0] == 0:
                 self.write_lock.release()
 
 

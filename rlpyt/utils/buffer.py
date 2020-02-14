@@ -45,8 +45,8 @@ def np_mp_array(shape, dtype):
     ctx = mp.get_context('spawn')
     size = int(np.prod(shape))
     nbytes = size * np.dtype(dtype).itemsize
-    mp_array = ctx.RawArray(ctypes.c_char, nbytes)
-    return np.frombuffer(mp_array, dtype=dtype, count=size).reshape(shape)
+    mp_array = ctx.Array(ctypes.c_char, nbytes)
+    return np.frombuffer(mp_array.get_obj(), dtype=dtype, count=size).reshape(shape)
 
 
 def torchify_buffer(buffer_):

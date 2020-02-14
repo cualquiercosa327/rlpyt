@@ -1,7 +1,9 @@
 
 import multiprocessing as mp
 import ctypes
+import numpy as np
 
+from rlpyt.utils.buffer import np_mp_array
 from rlpyt.utils.synchronize import RWLock
 
 
@@ -18,9 +20,9 @@ class AsyncReplayBufferMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.async_t = mp.RawValue("l")  # Type c_long.
+        self.async_t = np_mp_array(1, np.uint8)  # Type c_long.
         self.rw_lock = RWLock()
-        self._async_buffer_full = mp.RawValue(ctypes.c_bool, False)
+        self._async_buffer_full = np_mp_array(1, np.bool)
 
     def append_samples(self, *args, **kwargs):
         with self.rw_lock.write_lock:
@@ -39,9 +41,9 @@ class AsyncReplayBufferMixin:
             return super().update_batch_priorities(*args, **kwargs)
 
     def _async_pull(self):
-        self.t = self.async_t.value
-        self._buffer_full = self._async_buffer_full.value
+        self.t = self.async_t[0]
+        self._buffer_full = self._async_buffer_full[0]
 
     def _async_push(self):
-        self.async_t.value = self.t
-        self._async_buffer_full.value = self._buffer_full
+        self.async_t[0] = self.t
+        self._async_buffer_full[0] = self._buffer_full
